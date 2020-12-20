@@ -41,6 +41,7 @@ public class UIHandler {
 	private JTextField[] textFields = new JTextField[NUM_USER_INPUTS]; 
 	private String[] userInputs = new String[NUM_USER_INPUTS]; 
 	private Integer numGLCodes; 
+	private GLPair[] GLs; 
 
 	/**
 	 * Basic constructor initializes initial frame in fullscreen mode as requested by client. 
@@ -63,6 +64,37 @@ public class UIHandler {
 		panel.add(submitPanel()); 
 
 		frame.setVisible(true);
+	}
+	
+	/**
+	 * UI frame that pops up after first UI form is submitted. Allows for submission of GL codes and associated values
+	 */
+	public void GLFrame(Integer numCodes) {
+		GLs = new GLPair[numCodes]; 
+		GLPanel[] panels = new GLPanel[numCodes];
+		JPanel topPanel = new JPanel(); 
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+		JFrame GLFrame = new JFrame("GL Codes");
+		GLFrame.add(topPanel);
+		GLFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GLFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
+		//create a panel for each GL code that contains two text boxes for code and value
+		for(int i = 0; i < numCodes; i++) {
+			GLPanel panel = new GLPanel(); 
+			topPanel.add(panel.getPanel());  
+		}
+		
+		//create submit button that pulls values from text fields when user is finished
+		JLabel finishedLabel = new JLabel(""); 
+		JButton finishedButton = new JButton("Submit"); 
+		JPanel finishedPanel = new JPanel();
+		finishedPanel.add(finishedButton);
+		finishedPanel.add(finishedLabel); 
+		topPanel.add(finishedPanel);
+		
+		
+		GLFrame.setVisible(true);
 	}
 
 	/**
@@ -201,6 +233,7 @@ public class UIHandler {
 		
 		//create submit button and submit label to display potential error messages
 		JLabel submitLabel = new JLabel(""); 
+		submitLabel.setForeground(Color.red);
 		JButton submitButton = new JButton("Submit"); 
 		
 		submitButton.addActionListener(new ActionListener() {
@@ -208,23 +241,37 @@ public class UIHandler {
 				
 				//ensure user has entered a valid filepath
 				if(reportFilePath != null) {
+					
+					//tracks whether user has entered values in all fields
+					boolean finished = true; 
+					
 					//get inputs from text field
 					parseUserInputs(); 
 					numGLCodes = (Integer)spinner.getValue();
-					System.out.println(numGLCodes);
 					
-					//TODO: remove this later and ask if it's ok to have blank values
+					//ensure that all text fields contain a value and that none contain commas
 					for(int i = 0; i < userInputs.length; i++) {
-						System.out.println(userInputs[i]);
+						if(userInputs[i].length() == 0) {
+							submitLabel.setText("None of these fields may be empty");
+							finished = false; 
+						}
+						else if(userInputs[i].contains(",")) {
+							submitLabel.setText("Please remove all commas from these fields");
+							finished = false; 
+						}
 					}
 					
-					//close window if user successfully submits form
-					frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-					//TODO: open new frame for inputting gl codes and values
+					if(finished) {
+						
+						//close window if user successfully submits form
+						frame.dispose();
+						
+						//open UI form for inputting gl codes
+						GLFrame(numGLCodes); 
+					}
 				}
 				else {
 					submitLabel.setText("Please choose an NLS report file");
-					submitLabel.setForeground(Color.red);
 				}
 			}
 		});
@@ -241,7 +288,7 @@ public class UIHandler {
 	 */
 	public void parseUserInputs() {
 		for (int i = 0; i < textFields.length; i++) {
-			userInputs[i] = textFields[i].getText(); 
+			userInputs[i] = textFields[i].getText().trim(); 
 		}
 	}
 	
@@ -267,5 +314,14 @@ public class UIHandler {
 	 */
 	public String getFilePath() {
 		return reportFilePath; 
+	}
+	
+	/**
+	 * getter for GL code/value pairs
+	 * 
+	 * @return array containing GL codes and values
+	 */
+	public GLPair[] getGLCodes() {
+		return GLs; 
 	}
 }
