@@ -1,4 +1,4 @@
-package loanPaymentBridge;
+ package loanPaymentBridge;
 
 import java.math.BigDecimal;
 
@@ -23,6 +23,11 @@ public class GLPair {
 	
 	public String getGLNum() {
 		return GLNum; 
+	}
+	
+	@Override
+	public String toString() {
+		return GLNum + ", " + value;
 	}
 
 }

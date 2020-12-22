@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 
 /**
  * Utility class to build and operate UI elements abstracted from main computation
@@ -42,6 +43,7 @@ public class UIHandler {
 	private String[] userInputs = new String[NUM_USER_INPUTS]; 
 	private Integer numGLCodes; 
 	private GLPair[] GLs; 
+	private boolean isFinished = false; 
 
 	/**
 	 * Basic constructor initializes initial frame in fullscreen mode as requested by client. 
@@ -68,6 +70,7 @@ public class UIHandler {
 	
 	/**
 	 * UI frame that pops up after first UI form is submitted. Allows for submission of GL codes and associated values
+	 * this is a mess. I really should've planned it out better
 	 */
 	public void GLFrame(Integer numCodes) {
 		GLs = new GLPair[numCodes]; 
@@ -82,19 +85,82 @@ public class UIHandler {
 		//create a panel for each GL code that contains two text boxes for code and value
 		for(int i = 0; i < numCodes; i++) {
 			GLPanel panel = new GLPanel(); 
+			panels[i] = panel; 
 			topPanel.add(panel.getPanel());  
 		}
 		
 		//create submit button that pulls values from text fields when user is finished
 		JLabel finishedLabel = new JLabel(""); 
+		finishedLabel.setForeground(Color.red);
 		JButton finishedButton = new JButton("Submit"); 
 		JPanel finishedPanel = new JPanel();
 		finishedPanel.add(finishedButton);
 		finishedPanel.add(finishedLabel); 
 		topPanel.add(finishedPanel);
+		finishedButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				boolean intFinished = true; //tracks whether all ui fields have been appropriately filled
+				
+				for (int i = 0; i < numCodes; i++) {
+					
+					//retrieve user-inputted values from text boxes
+					String code = panels[i].getCodeBox().getText().trim();
+					String value = panels[i].getValueBox().getText().trim();
+					
+					//ensure no fields were left empty
+					if (code.length() == 0 || value.length() == 0) {
+						finishedLabel.setText("None of these values may be empty");
+						intFinished = false; 
+					}
+					
+					//ensure no fields contain commas (would break csv output if so)
+					else if (code.contains(",") || value.contains(",")) {
+						finishedLabel.setText("Please remove all commas from these fields");
+						intFinished = false; 
+					}
+					else {	
+						
+						//ensure GL values are numbers
+						if (isNumeric(value)) {
+							GLs[i] = new GLPair(code, BigDecimal.valueOf(Double.parseDouble(value))); 
+						}
+						else {
+							int index = i + 1; 
+							finishedLabel.setText("Value #" + index + " contains non-numeric character. \n Please ensure values contain only numbers.");
+							intFinished = false; 
+						}
+					}
+				}
+				
+				//if all fields were filled in correctly, close window and continue program
+				if(intFinished) {
+					isFinished = true; 
+					GLFrame.dispose();
+				}
+			}
+		});
 		
 		
 		GLFrame.setVisible(true);
+	}
+	
+	/**
+	 * method checks if string is a double
+	 * @param num string to be parsed
+	 * @return true if string contains only numeric characters (and no decimals) false otherwise
+	 */
+	public boolean isNumeric(String num) {
+		if (num == null) {
+			return false; 
+		}
+		try {
+			Double.parseDouble(num);
+		}
+		catch (NumberFormatException e){
+			return false; 
+		}
+		return true; 
 	}
 
 	/**
@@ -323,5 +389,13 @@ public class UIHandler {
 	 */
 	public GLPair[] getGLCodes() {
 		return GLs; 
+	}
+	
+	/**
+	 * indicates whether the user has finished inputting information into all UI elements
+	 * @return true if all fields were successfully completed, false otherwise
+	 */
+	public boolean isFinished() {
+		return isFinished;
 	}
 }
