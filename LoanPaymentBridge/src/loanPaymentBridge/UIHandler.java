@@ -16,7 +16,6 @@ import javax.swing.JFormattedTextField;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 
 /**
@@ -117,6 +116,12 @@ public class UIHandler {
 					//ensure no fields contain commas (would break csv output if so)
 					else if (code.contains(",") || value.contains(",")) {
 						finishedLabel.setText("Please remove all commas from these fields");
+						intFinished = false; 
+					}
+					
+					//ensure GL value is a monetary value (i.e. has two decimal digits)
+					else if (value.substring(value.indexOf(".")).length() != 3) {
+						finishedLabel.setText("Please ensure GL values contain two decimal digits (i.e. of the form \"x.xx\")");
 						intFinished = false; 
 					}
 					else {	
