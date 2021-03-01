@@ -119,8 +119,8 @@ public class UIHandler {
 						intFinished = false; 
 					}
 					
-					//ensure GL value is a monetary value (i.e. has two decimal digits)
-					else if (value.substring(value.indexOf(".")).length() != 3) {
+					//ensure GL value is a monetary value (i.e. has a decimal and two decimal digits)
+					else if (value.indexOf(".") < 0 || value.substring(value.indexOf(".")).length() != 3) {
 						finishedLabel.setText("Please ensure GL values contain two decimal digits (i.e. of the form \"x.xx\")");
 						intFinished = false; 
 					}
