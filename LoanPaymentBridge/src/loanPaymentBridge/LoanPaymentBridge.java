@@ -25,6 +25,11 @@ public class LoanPaymentBridge {
 	private static final int DOC_DESCRIPTION_TEXT = 5;
 	private static final int EFFECTIVE_DATE_TEXT = 6;
 	
+	//indices for excel report used to populate data from excel file
+	private static final int LOAN_GROUP_INDEX = 2; 
+	private static final int PRINCIPAL_INDEX = 7; 
+	private static final int INTEREST_INDEX = 8; 
+	
 	//values to be taken from UI
 	private static String reportFilePath; //filepath of report spreadsheet 
 	private static String[] userInputs; //array containing user-inputted data except gls
