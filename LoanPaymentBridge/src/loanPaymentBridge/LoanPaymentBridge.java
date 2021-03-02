@@ -26,6 +26,7 @@ public class LoanPaymentBridge {
 	private static final int EFFECTIVE_DATE_TEXT = 6;
 	
 	//indices for excel report used to populate data from excel file
+	//change these if file structure changes
 	private static final int LOAN_GROUP_INDEX = 2; 
 	private static final int PRINCIPAL_INDEX = 7; 
 	private static final int INTEREST_INDEX = 8; 
