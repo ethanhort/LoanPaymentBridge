@@ -27,7 +27,7 @@ public class LoanPaymentBridge {
 	
 	//indices for excel report used to populate data from excel file
 	//change these if file structure changes
-	private static final int LOAN_GROUP_INDEX = 2; 
+	private static final int LOAN_GROUP_INDEX = 0; 
 	private static final int PRINCIPAL_INDEX = 7; 
 	private static final int INTEREST_INDEX = 8; 
 	
