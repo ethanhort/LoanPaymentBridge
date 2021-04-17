@@ -27,7 +27,7 @@ public class LoanPaymentBridge {
 	
 	//indices for excel report used to populate data from excel file
 	//change these if file structure changes
-	private static final int LOAN_GROUP_INDEX = 0; 
+	private static final int LOAN_GROUP_INDEX = 2; 
 	private static final int PRINCIPAL_INDEX = 7; 
 	private static final int INTEREST_INDEX = 8; 
 	
@@ -70,17 +70,21 @@ public class LoanPaymentBridge {
 		
 		//get data from user interface
 		populateDataFromUI(userInterface);
+		Report report = new Report(reportFilePath, PRINCIPAL_INDEX, INTEREST_INDEX, LOAN_GROUP_INDEX); 
+		OutputTable output = new OutputTable(report, GLs); 
 		
 		//testing purposes only
-		System.out.println(reportFilePath);
-		System.out.println("Num GL Codes: " + numGLCodes);
-		for(int i = 0; i < userInputs.length; i++) {
-			System.out.println(userInputs[i]);
-		}
-		System.out.println("");
-		for(int i = 0; i < GLs.length; i++) {
-			System.out.println(GLs[i]);
-		}
+		System.out.println(output);
+//		System.out.println(report);
+//		System.out.println(reportFilePath);
+//		System.out.println("Num GL Codes: " + numGLCodes);
+//		for(int i = 0; i < userInputs.length; i++) {
+//			System.out.println(userInputs[i]);
+//		}
+//		System.out.println("");
+//		for(int i = 0; i < GLs.length; i++) {
+//			System.out.println(GLs[i]);
+//		}
 
 	}
 

@@ -17,6 +17,10 @@ public class GLPair {
 		this.GLNum = GLNum; 
 	}
 	
+	public void subtract(BigDecimal arg) {
+		value = value.subtract(arg); 
+	}
+	
 	public BigDecimal getValue() {
 		return value; 
 	}

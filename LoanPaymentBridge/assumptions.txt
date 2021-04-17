@@ -1,8 +1,13 @@
 ASSUMPTIONS: 
 
 Program knows where to begin reading data ...
+	-Program begins reading data from row 10 of excel report. If first entry in table is not on row 10, delete/add empty rows to compensate
+		-first entry meaning first row of excel file containing a principal and/or interest amount
 
 Program knows where to stop reading data ...
+	-Program continues to read data from excel file until there is empty cell in "Loan Group" column.
+		-if loan group column skips a cell or has a value immediately under final entry, program will break
+			-adjust excel file as necessary to accomodate this  
 
 Loan Group is in column C of excel report
 	-if this changes, change the LOAN_GROUP_INDEX constant at beginning of LoanPaymentBridge.java to appropriate value
@@ -13,3 +18,5 @@ Principal is in column H of excel report
 	
 Interest is in column I of excel report
 	-if this changes, fix in the same manner as above except change INTEREST_INDEX constant instead
+
+For last 3 issues, could also swap positions of columns in excel file to fix without having to dig through code
