@@ -22,7 +22,6 @@ public class Report {
 	
 	//instance variables that may need to be accessed later
 	private ArrayList<ReportRow> report; 
-	private int nextRow;
 
 	public Report(String filePath, int principalIndex, int interestIndex, int groupIndex) {
 		
@@ -39,7 +38,7 @@ public class Report {
 			wb = new XSSFWorkbook(fis);  
 			Sheet sheet = wb.getSheetAt(0);
 			
-			while(sheet.getRow(index) != null) {
+			while(sheet.getRow(index).getCell(groupIndex) != null) {
 				index++; 
 			} 
 			

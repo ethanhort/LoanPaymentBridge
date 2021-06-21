@@ -24,20 +24,74 @@ public class OutputTable {
 			//add row to output table with interest value
 			addRow(createId(currRow.getLoanGroup(), false), new BigDecimal(0), currRow.getInterest()); 
 			
-			//TODO: add output row for debit values from gl codes
+			//add principal and interests amt from one row of report to debit the grants
 			rowTotal = currRow.getPrincipal().add(currRow.getInterest()); 
-			if (GLs[glIndex].getValue().compareTo(rowTotal) > 0) {
+			
+			//case where current grant value is greater than or equal to P+I of current row of report
+			if (GLs[glIndex].getValue().compareTo(rowTotal) >= 0) {
 				addRow(createId(currRow.getLoanGroup(), GLs[glIndex].getGLNum()), rowTotal, new BigDecimal(0)); 
 				GLs[glIndex].subtract(rowTotal); 
-			} else if (GLs[glIndex].getValue().compareTo(rowTotal) == 0) {
-				addRow(createId(currRow.getLoanGroup(), GLs[glIndex].getGLNum()), rowTotal, new BigDecimal(0)); 
-				GLs[glIndex].subtract(rowTotal);
-				if (glIndex < GLs.length - 1) {
-					glIndex++; 
-				}
 			} else {
-				//make sure to catch error where there is more money in reports than in GLs
-				//make sure to catch error where there is more money in gls than in reports
+				//case where grant value is less than P+I of current row
+				
+				
+				//loop in case current row takes multiple grants to pay
+				while (rowTotal.compareTo(new BigDecimal(0)) != 0) {
+					
+					//case where grant value is greater than or equal to row value
+					if (GLs[glIndex].getValue().compareTo(rowTotal) >= 0) {
+						GLs[glIndex].subtract(rowTotal);
+						addRow(createId(currRow.getLoanGroup(), GLs[glIndex].getGLNum()), rowTotal, new BigDecimal(0)); 
+						rowTotal = new BigDecimal(0); 
+					} else {
+						//case where grant value is less than row value
+						addRow(createId(currRow.getLoanGroup(), GLs[glIndex].getGLNum()), GLs[glIndex].getValue(), new BigDecimal(0));
+						rowTotal = rowTotal.subtract(GLs[glIndex].getValue()); 
+						GLs[glIndex].subtract(GLs[glIndex].getValue());
+						
+						//update glIndex if we have another available grant
+						if (glIndex < GLs.length - 1) {
+							glIndex++; 
+						} else {
+							//we know that we have more money in report based on conditionals, so if there 
+							//is no available grant, crash program and notify user that something has gone wrong
+							//TODO: pop up error window here
+							//TODO: throw exception to halt program
+							UIHandler.handleError("Not enough money in cash accounts to cover ledger total");
+						}
+					}
+				}
+			}
+			//if the value of the current grant is 0 and there is another available grant, update glIndex
+			if (GLs[glIndex].getValue().compareTo(new BigDecimal(0)) > 0) {
+				//do nothing because there is still money in the current grant
+			} else if (GLs[glIndex].getValue().compareTo(new BigDecimal(0)) < 0){
+				//case where current grant has negative money??? this would be very bad if it ever happened
+				//TODO: pop up error window here 
+				//TODO: throw exception to halt program
+				UIHandler.handleError("This should NEVER happen. Ignore the next message and email me: ehorton14892@gmail.com");
+			} else {
+				//case where current grant is at 0
+				if (i == report.size() - 1) {
+					//do nothing because we are done with the report
+				} else {
+					if (glIndex < GLs.length - 1) {
+						glIndex++; 
+					} else {
+						//case where we are out of grant money but still have money in report
+						//TODO: pop up error window here
+						//TODO: throw exception to halt program
+						UIHandler.handleError("Not enough money in cash accounts to cover ledger total"); 	
+					}
+				}
+			}
+		}
+		
+		for(int i = 0; i < GLs.length; i++) {
+			if (GLs[i].getValue().compareTo(new BigDecimal(0)) != 0) {
+				//TODO: pop up error window here
+				//TODO: throw exception to halt program
+				UIHandler.handleError("Too much money in cash accounts to cover ledger total"); 	
 			}
 		}
 	}
@@ -68,6 +122,10 @@ public class OutputTable {
 	
 	public OutputRow getRow(int index) {
 		return table.get(index); 
+	}
+	
+	public int size() {
+		return table.size(); 
 	}
 	
 	@Override

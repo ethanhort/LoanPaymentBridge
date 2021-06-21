@@ -4,6 +4,9 @@
 package loanPaymentBridge;
 
 import java.util.concurrent.TimeUnit;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * @author Ethan Horton
@@ -73,8 +76,29 @@ public class LoanPaymentBridge {
 		Report report = new Report(reportFilePath, PRINCIPAL_INDEX, INTEREST_INDEX, LOAN_GROUP_INDEX); 
 		OutputTable output = new OutputTable(report, GLs); 
 		
+		try {
+			FileWriter writer = new FileWriter("loan_payment_output.csv"); 
+			for (int i = 0; i < output.size(); i++) {
+				writer.write(userInputs[0] + ", " + userInputs[1] + ", " + userInputs[2] + ", " + userInputs[3]
+						+ ", " + userInputs[4] + ", " + userInputs[5] + ", " + userInputs[6] + ", BP, JV, no, N, "
+						+ output.getRow(i).getId().substring(0, 2) + ", " + output.getRow(i).getId().substring(3, 6)
+						+ ", " + output.getRow(i).getId().substring(7, 11) + ", " + "9999, 1, " + output.getRow(i).getDebit()
+						+ ", " + output.getRow(i).getCredit() + "\n");
+			}
+			
+			writer.flush(); 
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("Problem writing to file. Please try again.");
+		}
+		
 		//testing purposes only
-		System.out.println(output);
+//		System.out.println(output);
+//		BigDecimal total = new BigDecimal(0); 
+//		for (int i = 0; i < output.size(); i++) {
+//			total = total.add(output.getRow(i).getDebit()); 
+//		}
+//		System.out.println(total);
 //		System.out.println(report);
 //		System.out.println(reportFilePath);
 //		System.out.println("Num GL Codes: " + numGLCodes);
