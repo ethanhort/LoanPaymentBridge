@@ -11,7 +11,7 @@ public class ReportRow {
 	
 	//instance variables for individual components of the report row
 	private String loanGroup;
-	private BigDecimal principal, interest; 
+	private BigDecimal principal, interest, escrow, servicing; 
 	
 	/**
 	 * constructor fills instance variables from parameters
@@ -19,10 +19,12 @@ public class ReportRow {
 	 * @param principal
 	 * @param interest
 	 */
-	public ReportRow(String loanGroup, BigDecimal principal, BigDecimal interest) {
+	public ReportRow(String loanGroup, BigDecimal principal, BigDecimal interest, BigDecimal escrow, BigDecimal servicing) {
 		this.loanGroup = loanGroup; 
 		this.principal = principal; 
 		this.interest = interest; 
+		this.escrow = escrow; 
+		this.servicing = servicing; 
 	}
 	
 	//publicly available accessor methods for specified fields
@@ -38,9 +40,17 @@ public class ReportRow {
 		return interest; 
 	}
 	
+	public BigDecimal getEscrow() {
+		return escrow; 
+	}
+	
+	public BigDecimal getServicing() {
+		return servicing; 
+	}
+	
 	@Override
 	public String toString() {
-		return "Loan Group: " + loanGroup + ", Principal: " + principal + ", Interest: " + interest; 
+		return "Loan Group: " + loanGroup + ", Principal: " + principal + ", Interest: " + interest + ", Escrow: " + escrow + ", Servicing: " + servicing; 
 	}
 
 }

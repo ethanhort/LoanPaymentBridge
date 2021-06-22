@@ -30,9 +30,11 @@ public class LoanPaymentBridge {
 	
 	//indices for excel report used to populate data from excel file
 	//change these if file structure changes
-	private static final int LOAN_GROUP_INDEX = 2; 
-	private static final int PRINCIPAL_INDEX = 7; 
-	private static final int INTEREST_INDEX = 8; 
+	private static final int LOAN_GROUP_INDEX = 3; 
+	private static final int PRINCIPAL_INDEX = 6; 
+	private static final int INTEREST_INDEX = 7; 
+	private static final int ESCROW_INDEX = 8; 
+	private static final int SERVICING_INDEX = 9; 
 	
 	//values to be taken from UI
 	private static String reportFilePath; //filepath of report spreadsheet 
@@ -73,7 +75,7 @@ public class LoanPaymentBridge {
 		
 		//get data from user interface
 		populateDataFromUI(userInterface);
-		Report report = new Report(reportFilePath, PRINCIPAL_INDEX, INTEREST_INDEX, LOAN_GROUP_INDEX); 
+		Report report = new Report(reportFilePath, PRINCIPAL_INDEX, INTEREST_INDEX, LOAN_GROUP_INDEX, ESCROW_INDEX, SERVICING_INDEX); 
 		OutputTable output = new OutputTable(report, GLs); 
 		
 		try {

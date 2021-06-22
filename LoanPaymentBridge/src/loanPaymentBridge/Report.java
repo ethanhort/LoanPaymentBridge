@@ -23,7 +23,7 @@ public class Report {
 	//instance variables that may need to be accessed later
 	private ArrayList<ReportRow> report; 
 
-	public Report(String filePath, int principalIndex, int interestIndex, int groupIndex) {
+	public Report(String filePath, int principalIndex, int interestIndex, int groupIndex, int escrowIndex, int servicingIndex) {
 		
 		int index = START_INDEX; 
 		report = new ArrayList<ReportRow>(); 
@@ -38,12 +38,12 @@ public class Report {
 			wb = new XSSFWorkbook(fis);  
 			Sheet sheet = wb.getSheetAt(0);
 			
-			while(sheet.getRow(index).getCell(groupIndex) != null) {
+			while(sheet.getRow(index) != null && sheet.getRow(index).getCell(groupIndex) != null) {
 				index++; 
 			} 
 			
 			//initialize the array of rows to the appropriate size 
-			populateReport(index, principalIndex, interestIndex, groupIndex, sheet); 
+			populateReport(index, principalIndex, interestIndex, groupIndex, escrowIndex, servicingIndex, sheet); 
 		}
 		catch(FileNotFoundException e)  {  
 			System.out.println("Cannot find file containing ledger report at specified location");;  
@@ -61,23 +61,29 @@ public class Report {
 	 * @param groupIndex index of column containing loan group info
 	 * @param sheet representation of excel spreadsheet
 	 */
-	public void populateReport(int lastIndex, int principalIndex, int interestIndex, int groupIndex, Sheet sheet) {
+	public void populateReport(int lastIndex, int principalIndex, int interestIndex, int groupIndex, int escrowIndex, int servicingIndex, Sheet sheet) {
 		
 		BigDecimal principal = new BigDecimal(0);  
 		BigDecimal interest = new BigDecimal(0);  
+		BigDecimal escrow = new BigDecimal(0); 
+		BigDecimal servicing = new BigDecimal(0); 
 		String groupNum = sheet.getRow(START_INDEX).getCell(groupIndex).getStringCellValue().substring(0, 3); 
 		for (int i = START_INDEX; i < lastIndex; i++) {
 			if (groupNum.equals(sheet.getRow(i).getCell(groupIndex).getStringCellValue().substring(0, 3))) {
-				principal = principal.add(BigDecimal.valueOf(sheet.getRow(i).getCell(principalIndex).getNumericCellValue())); 
-				interest = interest.add(BigDecimal.valueOf(sheet.getRow(i).getCell(interestIndex).getNumericCellValue())); 
+				principal = principal.add(BigDecimal.valueOf(sheet.getRow(i).getCell(principalIndex).getNumericCellValue()).multiply(new BigDecimal(-1))); 
+				interest = interest.add(BigDecimal.valueOf(sheet.getRow(i).getCell(interestIndex).getNumericCellValue()).multiply(new BigDecimal(-1)));
+				escrow = escrow.add(BigDecimal.valueOf(sheet.getRow(i).getCell(escrowIndex).getNumericCellValue()).multiply(new BigDecimal(-1))); 
+				servicing = servicing.add(BigDecimal.valueOf(sheet.getRow(i).getCell(servicingIndex).getNumericCellValue()).multiply(new BigDecimal(-1))); 
 			} else {
-				addRow(groupNum, principal, interest);
+				addRow(groupNum, principal, interest, escrow, servicing);
 				groupNum = sheet.getRow(i).getCell(groupIndex).getStringCellValue().substring(0, 3);
-				principal = BigDecimal.valueOf(sheet.getRow(i).getCell(principalIndex).getNumericCellValue()); 
-				interest = BigDecimal.valueOf(sheet.getRow(i).getCell(interestIndex).getNumericCellValue()); 
+				principal = BigDecimal.valueOf(sheet.getRow(i).getCell(principalIndex).getNumericCellValue()).multiply(new BigDecimal(-1)); 
+				interest = BigDecimal.valueOf(sheet.getRow(i).getCell(interestIndex).getNumericCellValue()).multiply(new BigDecimal(-1));
+				escrow = BigDecimal.valueOf(sheet.getRow(i).getCell(escrowIndex).getNumericCellValue()).multiply(new BigDecimal(-1)); 
+				servicing = BigDecimal.valueOf(sheet.getRow(i).getCell(servicingIndex).getNumericCellValue()).multiply(new BigDecimal(-1)); 
 			}
 		}
-		addRow(groupNum, principal, interest);
+		addRow(groupNum, principal, interest, escrow, servicing);
 	}
 	
 	/**
@@ -86,8 +92,8 @@ public class Report {
 	 * @param principal
 	 * @param interest
 	 */
-	public void addRow(String loanGroup, BigDecimal principal, BigDecimal interest) {
-		report.add(new ReportRow(loanGroup, principal, interest));
+	public void addRow(String loanGroup, BigDecimal principal, BigDecimal interest, BigDecimal escrow, BigDecimal servicing) {
+		report.add(new ReportRow(loanGroup, principal, interest, escrow, servicing));
 	}
 	
 	/**
